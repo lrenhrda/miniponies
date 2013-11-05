@@ -7,7 +7,7 @@
 #
 
 jQuery ->
-  $.miniPony = ( element, options ) ->
+  $.miniPonies = ( element, options ) ->
 
     # plugin defaults
     @defaults = {
@@ -51,11 +51,11 @@ jQuery ->
     this
 
   # default plugin settings
-  $.pluginName::defaults =
+  $.miniPonies::defaults =
       message: 'Hello world'  # option description
 
-  $.fn.pluginName = ( options ) ->
+  $.fn.miniPonies = ( options ) ->
     this.each ->
-      if $( this ).data( 'pluginName' ) is undefined
-        plugin = new $.pluginName( this, options )
-        $( this).data( 'pluginName', plugin )
+      if $( this ).data( 'miniPonies' ) is undefined
+        plugin = new $.miniPonies( this, options )
+        $( this).data( 'miniPonies', plugin )

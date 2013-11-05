@@ -1,6 +1,6 @@
 (function() {
   jQuery(function() {
-    $.miniPony = function(element, options) {
+    $.miniPonies = function(element, options) {
       var state;
       this.defaults = {
         divClass: 'js-mp_pony',
@@ -32,15 +32,15 @@
       this.init();
       return this;
     };
-    $.pluginName.prototype.defaults = {
+    $.miniPonies.prototype.defaults = {
       message: 'Hello world'
     };
-    return $.fn.pluginName = function(options) {
+    return $.fn.miniPonies = function(options) {
       return this.each(function() {
         var plugin;
-        if ($(this).data('pluginName') === void 0) {
-          plugin = new $.pluginName(this, options);
-          return $(this).data('pluginName', plugin);
+        if ($(this).data('miniPonies') === void 0) {
+          plugin = new $.miniPonies(this, options);
+          return $(this).data('miniPonies', plugin);
         }
       });
     };

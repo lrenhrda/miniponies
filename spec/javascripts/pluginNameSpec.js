@@ -1,5 +1,5 @@
 (function() {
-  describe('PluginName', function() {
+  describe('Mini Ponies', function() {
     var options;
     options = {
       message: 'Hello World'
@@ -10,25 +10,25 @@
     });
     describe('plugin behavior', function() {
       it('should be available on the jQuery object', function() {
-        return expect($.fn.pluginName).toBeDefined();
+        return expect($.fn.miniPonies).toBeDefined();
       });
       it('should be chainable', function() {
-        return expect(this.$element.pluginName()).toBe(this.$element);
+        return expect(this.$element.miniPonies()).toBe(this.$element);
       });
       it('should offers default values', function() {
         var plugin;
-        plugin = new $.pluginName(this.$element);
+        plugin = new $.miniPonies(this.$element);
         return expect(plugin.defaults).toBeDefined();
       });
       return it('should overwrites the settings', function() {
         var plugin;
-        plugin = new $.pluginName(this.$element, options);
+        plugin = new $.miniPonies(this.$element, options);
         return expect(plugin.settings.message).toBe(options.message);
       });
     });
     return describe('plugin state', function() {
       beforeEach(function() {
-        return this.plugin = new $.pluginName(this.$element);
+        return this.plugin = new $.miniPonies(this.$element);
       });
       it('should have a ready state', function() {
         return expect(this.plugin.getState()).toBe('ready');

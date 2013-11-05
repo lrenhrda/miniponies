@@ -8,24 +8,24 @@ describe 'Mini Ponies', ->
 
   describe 'plugin behavior', ->
     it 'should be available on the jQuery object', ->
-      expect( $.fn.pluginName ).toBeDefined()
+      expect( $.fn.miniPonies ).toBeDefined()
 
     it 'should be chainable', ->
-      expect( @$element.pluginName() ).toBe @$element
+      expect( @$element.miniPonies() ).toBe @$element
 
     it 'should offers default values', ->
-      plugin = new $.pluginName( @$element )
+      plugin = new $.miniPonies( @$element )
 
       expect( plugin.defaults ).toBeDefined()
 
     it 'should overwrites the settings', ->
-      plugin = new $.pluginName( @$element, options )
+      plugin = new $.miniPonies( @$element, options )
 
       expect( plugin.settings.message ).toBe( options.message )
 
   describe 'plugin state', ->
     beforeEach ->
-      @plugin = new $.pluginName( @$element )
+      @plugin = new $.miniPonies( @$element )
 
     it 'should have a ready state', ->
       expect( @plugin.getState() ).toBe 'ready'
