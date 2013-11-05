@@ -1,7 +1,12 @@
 (function() {
   jQuery(function() {
-    $.pluginName = function(element, options) {
+    $.miniPony = function(element, options) {
       var state;
+      this.defaults = {
+        divClass: 'js-mp_pony',
+        moveSpeed: 600,
+        moveEasing: ''
+      };
       state = '';
       this.settings = {};
       this.$element = $(element);

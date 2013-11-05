@@ -1,13 +1,21 @@
 #
-# Name    : <plugin name>
-# Author  : <your name>, <your website url>, <twitter handle>
-# Version : <version number>
-# Repo    : <repo url>
-# Website : <website url>
+# Name    : Mini Ponies
+# Author  : Lauren Herda, http://www.herda.me, @lrenhrda
+# Version : 0.1.0
+# Repo    : https://github.com/lrenhrda/miniponies
+# Website : http://miniponi.es/
 #
 
 jQuery ->
-  $.pluginName = ( element, options ) ->
+  $.miniPony = ( element, options ) ->
+
+    # plugin defaults
+    @defaults = {
+      divClass    : 'js-mp_pony'  # class for pony div
+      moveSpeed   : 600           # speed of pony when moving
+      moveEasing  : ''
+    }
+
     # current state
     state = ''
 
