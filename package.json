@@ -10,12 +10,12 @@
   },
   "repository" : {
     "type" : "git",
-    "url"  : "git://github.com/isosceles/miniponies.git"
+    "url"  : "git://github.com/lrenhrda/miniponies.git"
   },
   "description" : "Mini ponies for your website.",
   "keywords": ["development", "workflow", "rapid", "test", "jasmine", "jquery", "plugin", "headless", "javascript", "coffeescript", "guard", "boilerplate", "default", "toolkit", "base"],
   "bugs" : {
-    "url" : "https://github.com/isosceles/miniponies/issues"
+    "url" : "https://github.com/lrenhrda/miniponies/issues"
   },
   "licenses": [{
     "type": "MIT",
