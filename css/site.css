@@ -1,23 +1,10 @@
-body {
-  font-family: helvetica,'Georgia',arial,sans-serif;
-  background-color: #fafbf1;
-  color: #3C3C3C;
-}
-
-h1 {
-  font-size: 24px;
-  line-height: 48px;
-  font-weight: 100;
-  letter-spacing: 1px;
-  border-bottom: 1px solid #3c3c3c;
-}
-
-h1 strong {
-  text-transform: uppercase;
-  font-weight: bold;
-}
-
-#container {
-  width: 980px;
-  margin:  0 auto;
-}
+@font-face{font-family:'Pirata One';font-style:normal;font-weight:400;src:local('Pirata One'),local('PirataOne-Regular'),url("http://themes.googleusercontent.com/static/fonts/pirataone/v1/klB4X8FTk9lmeK135Auxh73hpw3pgy2gAi-Ip7WPMi0.woff") format('woff')}
+@font-face{font-family:'Roboto Condensed';font-style:normal;font-weight:300;src:local('Roboto Condensed Light'),local('RobotoCondensed-Light'),url("http://themes.googleusercontent.com/static/fonts/robotocondensed/v8/b9QBgL0iMZfDSpmcXcE8nMrfajfqx5pse9BUPMmpr-I.woff") format('woff')}
+@font-face{font-family:'Roboto Condensed';font-style:normal;font-weight:400;src:local('Roboto Condensed Regular'),local('RobotoCondensed-Regular'),url("http://themes.googleusercontent.com/static/fonts/robotocondensed/v8/Zd2E9abXLFGSr9G3YK2MsNxB8OB85xaNTJvVSB9YUjQ.woff") format('woff')}
+@font-face{font-family:'Roboto Condensed';font-style:italic;font-weight:300;src:local('Roboto Condensed Light Italic'),local('RobotoCondensed-LightItalic'),url("http://themes.googleusercontent.com/static/fonts/robotocondensed/v8/mg0cGfGRUERshzBlvqxeAHmtOlNhzYuCHuWdbmWr-YuglnMp3_3A8V8Ai8YosRtX.woff") format('woff')}
+@font-face{font-family:'Roboto Condensed';font-style:italic;font-weight:400;src:local('Roboto Condensed Italic'),local('RobotoCondensed-Italic'),url("http://themes.googleusercontent.com/static/fonts/robotocondensed/v8/BP5K8ZAJv9qEbmuFp8RpJUyuTvcJPSUMXo8_04ke-FA.woff") format('woff')}
+body{background:#fff;color:#333;font-family:'Roboto Condensed';padding:0;margin:0}
+#container{width:600px;margin:2em auto 0}
+h1{font-size:4em;line-height:1.25em;font-family:'Pirata One';color:#57358b;padding:0;margin:0}
+p{font-family:'Roboto Condensed';font-weight:300;letter-spacing:.025em;font-size:1.25em;line-height:1.5em;font-smoothing:antialiased;}
+p.intro{font-size:1.75em;color:#f48b33}

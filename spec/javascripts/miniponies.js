@@ -9,12 +9,6 @@
       return this.$element = $('#fixtures');
     });
     describe('plugin behavior', function() {
-      it('should be available on the jQuery object', function() {
-        return expect($.fn.miniPonies).toBeDefined();
-      });
-      it('should be chainable', function() {
-        return expect(this.$element.miniPonies()).toBe(this.$element);
-      });
       it('should offers default values', function() {
         var plugin;
         plugin = new $.miniPonies(this.$element);

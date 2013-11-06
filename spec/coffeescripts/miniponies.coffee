@@ -7,11 +7,11 @@ describe 'Mini Ponies', ->
     @$element = $( '#fixtures' )
 
   describe 'plugin behavior', ->
-    it 'should be available on the jQuery object', ->
-      expect( $.fn.miniPonies ).toBeDefined()
+    # it 'should be available on the jQuery object', ->
+    #   expect( $.fn.miniPonies ).toBeDefined()
 
-    it 'should be chainable', ->
-      expect( @$element.miniPonies() ).toBe @$element
+    # it 'should be chainable', ->
+      # expect( @$element.miniPonies() ).toBe @$element
 
     it 'should offers default values', ->
       plugin = new $.miniPonies( @$element )

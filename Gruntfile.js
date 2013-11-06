@@ -1,5 +1,5 @@
 /*global module:false*/
-module.exports = function(grunt) { 
+module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -18,6 +18,13 @@ module.exports = function(grunt) {
             '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
             '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
             ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */'
+        }
+      }
+    },
+    stylus: {
+      compile: {
+        files: {
+          'css/site.css': 'css/site.styl'
         }
       }
     },
@@ -59,14 +66,19 @@ module.exports = function(grunt) {
     },
     watch : {
       files: [
-        'js/*.coffee', 
-        'spec/coffeescripts/**/*.coffee'
+        'js/*.coffee',
+        'spec/coffeescripts/**/*.coffee',
+        'css/*.styl'
       ],
-      tasks: ['coffee', 'growl:coffee', 'jasmine', 'growl:jasmine']
+      tasks: ['coffee', 'growl:coffee', 'stylus', 'growl:stylus', 'jasmine', 'growl:jasmine']
     },
     growl : {
       coffee : {
         title   : 'CoffeeScript',
+        message : 'Compiled successfully'
+      },
+      stylus : {
+        title   : 'Stylus',
         message : 'Compiled successfully'
       },
       jasmine : {
@@ -80,14 +92,15 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-growl');
   grunt.loadNpmTasks('grunt-contrib-jasmine');
   grunt.loadNpmTasks('grunt-contrib-coffee');
+  grunt.loadNpmTasks('grunt-contrib-stylus');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-uglify');
 
   // Default and Build tasks
-  mainTasks = ['coffee', 'growl:coffee', 'jasmine', 'growl:jasmine']
+  mainTasks = ['coffee', 'growl:coffee', 'stylus', 'growl:stylus', 'jasmine', 'growl:jasmine'];
   grunt.registerTask('default', mainTasks);
   grunt.registerTask('build', mainTasks.concat(['uglify']));
 
   // Travis CI task.
-  grunt.registerTask('travis', ['coffee', 'jasmine']);
+  grunt.registerTask('travis', ['coffee', 'stylus', 'jasmine']);
 };
