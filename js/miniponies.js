@@ -1,9 +1,8 @@
 (function() {
   jQuery(function() {
-    $.miniPonies = function(element, options) {
+    $.miniPonies = function(options) {
       var appearAnimateProperties, disappearAnimateProperties, ponyCss, state;
       this.defaults = {
-        element: element,
         divClass: 'js-mp_pony',
         stride: 10,
         walkEasing: 'linear',
@@ -31,15 +30,7 @@
         opacity: 0
       };
       this.settings = {};
-      this.$element = $(element);
-      this.origin = {
-        x: 0,
-        y: 0
-      };
-      this.bounds = {
-        x: this.origin.x + $(window).width(),
-        y: this.origin.y + $(window).height()
-      };
+      this.$element = $('body');
       this.$pony = $('<div>');
       state = 'hidden';
       this.direction = -1;
@@ -49,6 +40,33 @@
       };
       this.getState = function() {
         return state;
+      };
+      this.getBounds = function() {
+        return {
+          x: $(window).width(),
+          y: $(window).height()
+        };
+      };
+      this.getPosition = function() {
+        var p;
+        p = this.$pony.position();
+        return {
+          x: p.left,
+          y: p.top
+        };
+      };
+      this.getPonySize = function() {
+        return {
+          width: this.$pony.width(),
+          height: this.$pony.height()
+        };
+      };
+      this.ponyInBounds = function() {
+        var b, p, s;
+        p = this.getPosition();
+        b = this.getBounds();
+        s = this.getPonySize();
+        return (p.x >= 0 && p.x < (b.x - s.width)) && (p.y >= 0 && p.y < (b.y - s.height));
       };
       this.getSetting = function(key) {
         return this.settings[key];
@@ -89,9 +107,11 @@
         };
       };
       this.randomLocationInBounds = function() {
+        var b;
+        b = this.getBounds();
         return {
-          x: 100,
-          y: 100
+          x: Math.floor(Math.random() * b.x),
+          y: Math.floor(Math.random() * b.y)
         };
       };
       this.getPonySpeed = function(dist) {
@@ -99,15 +119,10 @@
       };
       this.recenterPony = function() {
         var currentLoc, randLoc;
+        console.log("ERMAGERD PERNY MERST BER RECERNTERD!");
         randLoc = this.randomLocationInBounds();
         currentLoc = this.$pony.position();
         return this.animatePony(randLoc, 500);
-      };
-      this.ponyInBounds = function() {
-        var pl, pt;
-        pt = this.$pony.position().top;
-        pl = this.$pony.position().left;
-        return (pt > this.origin.y && pt < (this.bounds.y - this.$pony.height())) && (pl > this.origin.x && pl < (this.bounds.x - this.$pony.width()));
       };
       this.randomDirection = function() {
         var _ref;
@@ -116,16 +131,9 @@
         };
       };
       this.getPonyDirection = function(current, destination) {
-        if (current.x < destination.x) {
-          return 1;
-        } else {
-          return -1;
-        }
-      };
-      this.getPonyCoords = function() {
-        return {
-          x: this.$pony.position().left,
-          y: this.$pony.position().top
+        var _ref;
+        return (_ref = current.x < destination.x) != null ? _ref : {
+          1: -1
         };
       };
       this.setPonyImage = function(loc) {
@@ -133,8 +141,7 @@
       };
       this.animatePony = function(coords, speed) {
         var _this = this;
-        this.direction = this.getPonyDirection(this.getPonyCoords(), coords);
-        console.log(this.getPonyCoords().x + ", " + coords.x, this.direction);
+        this.direction = this.getPonyDirection(this.getPosition(), coords);
         return this.$pony.animate({
           top: coords.y,
           left: coords.x
@@ -142,14 +149,14 @@
           duration: speed,
           easing: this.getSetting('walkEasing'),
           start: function() {
-            if (_this.direction < 0) {
+            if (_this.direction === false) {
               return _this.setPonyImage(_this.getSetting('walkingFromRightImg'));
             } else {
               return _this.setPonyImage(_this.getSetting('walkingFromLeftImg'));
             }
           },
           done: function() {
-            if (_this.direction < 0) {
+            if (_this.direction === false) {
               _this.setPonyImage(_this.getSetting('restingFromRightImg'));
             } else {
               _this.setPonyImage(_this.getSetting('restingFromLeftImg'));
@@ -162,6 +169,11 @@
       };
       this.init = function() {
         var _this = this;
+        $(window).on('resize', function() {
+          if (!_this.ponyInBounds()) {
+            return _this.recenterPony();
+          }
+        });
         this.settings = $.extend({}, this.defaults, options);
         this.$pony.attr('class', this.getSetting('divClass'));
         this.direction = 1;
@@ -170,7 +182,7 @@
         } else {
           this.setPonyImage(this.getSetting('restingFromRightImg'));
         }
-        this.$container = $(this.getSetting('element'));
+        this.$container = this.$element;
         this.$pony.css(ponyCss);
         this.$container.append(this.$pony);
         this.$pony.on('mouseenter', function() {

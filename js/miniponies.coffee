@@ -7,11 +7,10 @@
 #
 
 jQuery ->
-  $.miniPonies = ( element, options ) ->
+  $.miniPonies = ( options ) ->
 
     # plugin defaults
     @defaults = {
-      element     : element
       divClass    : 'js-mp_pony'            # string, class for pony div
       stride      : 10                      # number, pixels pony travels per millisecond
       walkEasing  : 'linear'                      # string, easing equation for walking pony
@@ -44,15 +43,7 @@ jQuery ->
     @settings = {}
 
     # jQuery version of DOM element attached to the plugin
-    @$element = $ element
-
-    @origin = 
-      x: 0
-      y: 0
-
-    @bounds = 
-      x: @origin.x + $(window).width()
-      y: @origin.y + $(window).height()
+    @$element = $ 'body'
 
     @$pony = $ '<div>'
 
@@ -69,6 +60,30 @@ jQuery ->
 
     #get current state
     @getState = -> state
+
+    @getBounds = ->
+      x: $(window).width()
+      y: $(window).height()
+
+    @getPosition = ->
+      p = @$pony.position()
+      {
+        x: p.left
+        y: p.top
+      }
+
+    @getPonySize = ->
+      {
+        width: @$pony.width()
+        height: @$pony.height()
+      }
+
+    # Is the pony within the container bounds?
+    @ponyInBounds = ->
+      p = @getPosition()
+      b = @getBounds()
+      s = @getPonySize()
+      (p.x >= 0 && p.x < (b.x - s.width)) && (p.y >= 0 && p.y < (b.y - s.height))
 
     # get particular plugin setting
     @getSetting = ( key ) ->
@@ -108,53 +123,35 @@ jQuery ->
 
     # TODO: make this return a random location within the bounds
     @randomLocationInBounds = ->
+      b = @getBounds()
       {
-        x: 100
-        y: 100
+        x: Math.floor(Math.random() * b.x)
+        y: Math.floor(Math.random() * b.y)
       }
 
     @getPonySpeed = (dist)->
       (dist / @getSetting('stride')) * 100
 
     @recenterPony = ->
+      console.log "ERMAGERD PERNY MERST BER RECERNTERD!"
       randLoc = @randomLocationInBounds()
       currentLoc = @$pony.position()
-      # distance = @cartToPolar({
-      #   x: currentLoc.left
-      #   y: currentLoc.top
-      # }, randLoc).d
-      # @animatePony(randLoc, @getPonySpeed(distance))
       @animatePony(randLoc, 500)
-
-    # Is the pony within the container bounds?
-    @ponyInBounds = ->
-      pt = @$pony.position().top
-      pl = @$pony.position().left
-      (pt > @origin.y && pt < (@bounds.y - @$pony.height())) && (pl > @origin.x && pl < (@bounds.x - @$pony.width()))
 
     @randomDirection = -> Math.random() < 0.5 ? -1 : 1
 
     # Which way is the pony traveling?
     # Returns 1 for left-to-right, -1 for right-to-left.
-    @getPonyDirection = (current, destination)->
-      if (current.x < destination.x) 
-        return 1
-      else return -1
-
-    @getPonyCoords = ->
-      {
-        x: @$pony.position().left
-        y: @$pony.position().top
-      }
+    @getPonyDirection = (current, destination)-> (current.x < destination.x) ? 1 : -1
 
     @setPonyImage = (loc)->
       @$pony.html('<img src="' + loc + '">')
 
     # Move the pony
     @animatePony = (coords, speed)->
-      # TODO: use this function to delegate to a variety of more specific kinds of animations (flyPony, winkPony, etc.)
-      @direction = @getPonyDirection(@getPonyCoords(), coords)
-      console.log(@getPonyCoords().x + ", " + coords.x, @direction)
+      # TODO: use this function to delegate to a variety of more 
+      # specific kinds of animations (flyPony, winkPony, etc.)
+      @direction = @getPonyDirection(@getPosition(), coords)
       @$pony.animate
         top: coords.y
         left: coords.x
@@ -162,12 +159,12 @@ jQuery ->
           duration: speed
           easing: @getSetting('walkEasing')
           start: =>
-            if @direction < 0
+            if @direction == false
               @setPonyImage(@getSetting('walkingFromRightImg'))
             else
               @setPonyImage(@getSetting('walkingFromLeftImg'))
           done: =>
-            if @direction < 0
+            if @direction == false
               @setPonyImage(@getSetting('restingFromRightImg'))
             else
               @setPonyImage(@getSetting('restingFromLeftImg'))
@@ -177,6 +174,9 @@ jQuery ->
         }
 
     @init = ->
+      $(window).on 'resize', =>
+        if !@ponyInBounds()
+          @recenterPony()
       @settings = $.extend( {}, @defaults, options )
       @$pony.attr 'class', @getSetting('divClass')
       @direction = 1
@@ -184,7 +184,7 @@ jQuery ->
         @setPonyImage(@getSetting('restingFromLeftImg'))
       else 
         @setPonyImage(@getSetting('restingFromRightImg'))
-      @$container = $ @getSetting('element')
+      @$container = @$element
       @$pony.css(ponyCss)
       @$container.append @$pony
       @$pony.on 'mouseenter', =>

@@ -11,18 +11,18 @@
     describe('plugin behavior', function() {
       it('should offers default values', function() {
         var plugin;
-        plugin = new $.miniPonies(this.$element);
+        plugin = new $.miniPonies();
         return expect(plugin.defaults).toBeDefined();
       });
       return it('should overwrites the settings', function() {
         var plugin;
-        plugin = new $.miniPonies(this.$element, options);
+        plugin = new $.miniPonies(options);
         return expect(plugin.settings.message).toBe(options.message);
       });
     });
     return describe('plugin state', function() {
       beforeEach(function() {
-        return this.plugin = new $.miniPonies(this.$element);
+        return this.plugin = new $.miniPonies();
       });
       it('should have a ready state', function() {
         return expect(this.plugin.getState()).toBe('ready');

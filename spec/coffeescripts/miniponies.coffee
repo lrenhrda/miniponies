@@ -14,18 +14,18 @@ describe 'Mini Ponies', ->
       # expect( @$element.miniPonies() ).toBe @$element
 
     it 'should offers default values', ->
-      plugin = new $.miniPonies( @$element )
+      plugin = new $.miniPonies()
 
       expect( plugin.defaults ).toBeDefined()
 
     it 'should overwrites the settings', ->
-      plugin = new $.miniPonies( @$element, options )
+      plugin = new $.miniPonies( options )
 
       expect( plugin.settings.message ).toBe( options.message )
 
   describe 'plugin state', ->
     beforeEach ->
-      @plugin = new $.miniPonies( @$element )
+      @plugin = new $.miniPonies()
 
     it 'should have a ready state', ->
       expect( @plugin.getState() ).toBe 'ready'
