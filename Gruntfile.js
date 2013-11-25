@@ -57,20 +57,13 @@ module.exports = function(grunt) {
         }]
       }
     },
-    jasmine : {
-      src     : ['js/libs/*.js', 'spec/javascripts/libs/*.js', 'js/*.js', '!js/*.min.js'],
-      options : {
-        specs   : 'spec/javascripts/**/*.js',
-        helpers : 'spec/javascripts/helpers/**/*.js'
-      }
-    },
     watch : {
       files: [
         'js/*.coffee',
         'spec/coffeescripts/**/*.coffee',
         'css/*.styl'
       ],
-      tasks: ['coffee', 'growl:coffee', 'stylus', 'growl:stylus', 'jasmine', 'growl:jasmine']
+      tasks: ['coffee', 'growl:coffee', 'stylus', 'growl:stylus']
     },
     growl : {
       coffee : {
@@ -80,27 +73,22 @@ module.exports = function(grunt) {
       stylus : {
         title   : 'Stylus',
         message : 'Compiled successfully'
-      },
-      jasmine : {
-        title   : 'Jasmine',
-        message : 'Tests passed successfully'
       }
     }
   });
 
   // Lib tasks.
   grunt.loadNpmTasks('grunt-growl');
-  grunt.loadNpmTasks('grunt-contrib-jasmine');
   grunt.loadNpmTasks('grunt-contrib-coffee');
   grunt.loadNpmTasks('grunt-contrib-stylus');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-uglify');
 
   // Default and Build tasks
-  mainTasks = ['coffee', 'growl:coffee', 'stylus', 'growl:stylus', 'jasmine', 'growl:jasmine'];
+  mainTasks = ['coffee', 'growl:coffee', 'stylus', 'growl:stylus'];
   grunt.registerTask('default', mainTasks);
   grunt.registerTask('build', mainTasks.concat(['uglify']));
 
   // Travis CI task.
-  grunt.registerTask('travis', ['coffee', 'stylus', 'jasmine']);
+  grunt.registerTask('travis', ['coffee', 'stylus']);
 };

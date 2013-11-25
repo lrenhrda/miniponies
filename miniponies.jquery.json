@@ -3,7 +3,7 @@
   "version": "1.2.0",
   "title": "Mini Ponies",
   "description": "Mini ponies for your website.",
-  "keywords": ["development", "workflow", "rapid", "test", "jasmine", "jquery", "plugin", "headless", "javascript", "coffeescript", "guard", "boilerplate", "default", "toolkit", "base"],
+  "keywords": ["development", "workflow", "rapid", "test", "jquery", "plugin", "headless", "javascript", "coffeescript", "guard", "boilerplate", "default", "toolkit", "base"],
 
   "homepage": "http://miniponi.es/",
   "docs": "http://miniponi.es/",

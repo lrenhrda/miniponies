@@ -1,222 +1,224 @@
-#
-# Name    : Mini Ponies
-# Author  : Lauren Herda, http://www.herda.me, @lrenhrda
-# Version : 0.1.0
-# Repo    : https://github.com/lrenhrda/miniponies
-# Website : http://miniponi.es/
-#
+class Ticker
+  constructor: (@chance = 50)->
+    window.ee ?= new EventEmitter()
+    @timer = setInterval =>
+      if _.random(100) < @chance then window.ee.emitEvent('tick')
+    , 1000
 
-jQuery ->
-  $.miniPonies = ( options ) ->
+  # addListener: (...)->
+    # window.ee.addListener(...)
 
-    # plugin defaults
-    @defaults = {
-      divClass    : 'js-mp_pony'            # string, class for pony div
-      stride      : 10                      # number, pixels pony travels per millisecond
-      walkEasing  : 'linear'                      # string, easing equation for walking pony
-      onWalk      : ->                      # Function(pony), called when pony walks
-      onHalt      : ->                      # Function(pony), called when pony stops walking
-      restingFromRightImg: '/images/blank-standing-from right.gif'
-      restingFromLeftImg: '/images/blank-standing-from-left.gif'
-      walkingFromRightImg: '/images/blank-from right.gif'
-      walkingFromLeftImg: '/images/blank-from-left.gif'
-      maxMove     : 500
-      minMove     : 20
-    }
+class Coordinate
+  constructor: (@x = 0, @y = 0)->
 
-    # default pony CSS
-    ponyCss = 
-      display   : 'block'
-      position  : 'fixed'
-      top       : 100
-      left      : 100
-      opacity   : 1
-      'z-index' : 99999
+  getQuadrant: ->
+    # Quadrant I
+    if @x > 0 and @y > 0
+      return 0
+    # Quadrant II
+    if @x < 0 and @y > 0
+      return 180
+    # Quadrant III
+    if @x < 0 and @y < 0
+      return 180
+    # Quadrant IV
+    if @x > 0 and @y < 0
+      return 360
 
-    appearAnimateProperties =
-      opacity: 1
 
-    disappearAnimateProperties = 
-      opacity: 0
+class RandomCoordinate
 
-    # plugin settings
-    @settings = {}
+  # Returns a new (randomized) Coordinate object, instead of itself.
+  constructor: (@options)->
+    if @options.originBound == null then @options.originBound = new Coordinate()
+    if @options.extentBound == null then @options.extentBound = new Coordinate($(window).width(), $(window).height())
+    return new Coordinate(@randomizeX(), @randomizeY())
 
-    # jQuery version of DOM element attached to the plugin
-    @$element = $ 'body'
+  randomizeX: ->
+    _.random(@options.originBound.x, @options.extentBound.x)
+    
+  randomizeY: ->
+    _.random(@options.originBound.y, @options.extentBound.y)
+    
 
-    @$pony = $ '<div>'
+class Path
+  constructor: (@a, @b)->
+    # @a is origin
+    # @b is point
+    @delta = new Coordinate(@b.x - @a.x, @b.y - @a.y)
+    @length = Math.sqrt(Math.pow(@delta.x, 2) + Math.pow(@delta.y, 2))
 
-    # current state
-    state = 'hidden'
+  angle: (radians = false)->
 
-    # current direction
-    @direction = -1
+    if radians 
+      m = 1
+    else 
+      m = (180 / Math.PI)
 
-    # set current state
-    @setState = ( _state ) -> 
-      state = _state
-      console.log(state)
+    t = Math.atan(@delta.y / @delta.x) * m
+    t + @delta.getQuadrant()
 
-    #get current state
-    @getState = -> state
+  # Cardinal direction of motion
+  direction: ->
+    a = @angle()
+    if a > 45 and a <= 135
+      return 'up'
+    if a > 135 and a <= 225
+      return 'left'
+    if a > 225 and a <= 315
+      return 'down'
+    if a > 315 or a <= 45
+      return 'right'
 
-    @getBounds = ->
-      x: $(window).width()
-      y: $(window).height()
+  # Horizontal direction of motion
+  hDirection: ->
+    if @delta.x > 0
+      return 'right'
+    if @delta.x < 0
+      return 'left'
+    if @delta.x == 0
+      return false
 
-    @getPosition = ->
-      p = @$pony.position()
-      {
-        x: p.left
-        y: p.top
-      }
+  # Vertical direction of motion
+  vDirection: ->
+    if @delta.y > 0
+      return 'up'
+    if @delta.y < 0
+      return 'down'
+    if @delta.y == 0
+      return false
 
-    @getPonySize = ->
-      {
-        width: @$pony.width()
-        height: @$pony.height()
-      }
+  # Handy info about the object
+  info: ->
+    delta: @delta
+    angle: @angle()
+    length: @length
+    direction: @direction()
+    hDirection: @hDirection()
+    vDirection: @vDirection()
 
-    # Is the pony within the container bounds?
-    @ponyInBounds = ->
-      p = @getPosition()
-      b = @getBounds()
-      s = @getPonySize()
-      (p.x >= 0 && p.x < (b.x - s.width)) && (p.y >= 0 && p.y < (b.y - s.height))
 
-    # get particular plugin setting
-    @getSetting = ( key ) ->
-      @settings[ key ]
+# class Vector
+#   constructor: (@length = null)->
+#     if @length == null then @length = _random.()
+#     return new Path()
 
-    # call one of the plugin setting functions
-    @callSettingFunction = ( name, args = [] ) ->
-      @settings[name].apply( this, args )
+class Pony
+  constructor: (@options)->
+    @settings = _.extend({}, @defaults, @options)
+    @state = 'ready'
+    @pwny = $('<div>') # Pony element
+      .addClass('js-mp_pony')
+      .css(@ponyCSS)
+    if @settings.shadow then @pwny.addClass('shadow')
+    @cel = $ 'body'  # Container element
+    @ticker = new Ticker(5)
+    @createPony()
 
-    @polarToCart = (d, a)->
-      {
-        x: d * Math.cos(a)
-        y: d * Math.sin(a)
-      }
+  defaults:
+    stayInBounds: true
+    shadow: true
+    standing:
+      right: '/images/curly-brace/curly_brace-standing-from_left.gif'
+      left: '/images/curly-brace/curly_brace-standing-from_right.gif'
+    locomotion:
+      trotting:
+        speed: 100
+        right: '/images/curly-brace/curly_brace-trotting-from_left.gif'
+        left: '/images/curly-brace/curly_brace-trotting-from_right.gif'
+      galloping:
+        speed: 500
+    interactions:
+      kick: 'kick'
+      touch: 'touch'
 
-    @cartToPolar = (orig, dest)->
-      dx = dest.x - orig.x
-      dy = dest.y - orig.y
-      {
-        r: Math.pow((Math.pow(dx, 2) + Math.pow(dy, 2)), .5) * (180/Math.PI)
-        d: Math.atan(dy / dx)
-      }
+  ponyCSS: 
+    display: 'block'
+    position: 'fixed'
+    top: 0
+    left: 0
+    zIndex: 99999
+    # width: '100px'
+    # height: '100px'
 
-    # adds destination coordinates 
-    @getDestinationCoordinates = (distance, angle)->
-      coords = @polarToCart(distance, angle)
-      {
-        x: @$pony.position().left + coords.x
-        y: @$pony.position().top + coords.y
-      }
+  createPony: ->
+    @pwny.appendTo @cel
+    @pwny.html '<img src="'+@settings.standing.right+'">'
+    _.each @settings.interactions, (b, i)=>
+      @pwny.on i, @[b]
 
-    @randomVector = ->
-      {
-        dist: Math.floor(Math.random() * 200) + 50
-        angle: Math.floor(Math.random() * 360)
-      }
+  setPosition: (c)->
+    @pwny.css('top', c.x)
+    @pwny.css('left', c.y)
 
-    # TODO: make this return a random location within the bounds
-    @randomLocationInBounds = ->
-      b = @getBounds()
-      {
-        x: Math.floor(Math.random() * b.x)
-        y: Math.floor(Math.random() * b.y)
-      }
+  getPosition: ->
+    return new Coordinate(@pwny.position().left, @pwny.position().top)
+    
+  getSpeed: (locomotion)->
+    @settings.locomotion[locomotion].speed
 
-    @getPonySpeed = (dist)->
-      (dist / @getSetting('stride')) * 100
+  setState: (s)->
+    @state = s
 
-    @recenterPony = ->
-      console.log "ERMAGERD PERNY MERST BER RECERNTERD!"
-      randLoc = @randomLocationInBounds()
-      currentLoc = @$pony.position()
-      @animatePony(randLoc, 500)
+  getState: ->
+    @state
 
-    @randomDirection = -> Math.random() < 0.5 ? -1 : 1
+  getBounds: ->
+    w: $(window).width() - @pwny.width()
+    h: $(window).height() - @pwny.height()
 
-    # Which way is the pony traveling?
-    # Returns 1 for left-to-right, -1 for right-to-left.
-    @getPonyDirection = (current, destination)-> (current.x < destination.x) ? 1 : -1
+  # Interactions that the pony responds to
 
-    @setPonyImage = (loc)->
-      @$pony.html('<img src="' + loc + '">')
+  kick: =>
+    c = new RandomCoordinate
+      originBound: new Coordinate()
+      extentBound: new Coordinate(@getBounds().w, @getBounds().h)
+    @path = new Path(@getPosition(), c)
+    # @animate('galloping')
+    @wink()
 
-    # Move the pony
-    @animatePony = (coords, speed)->
-      # TODO: use this function to delegate to a variety of more 
-      # specific kinds of animations (flyPony, winkPony, etc.)
-      @direction = @getPonyDirection(@getPosition(), coords)
-      @$pony.animate
-        top: coords.y
-        left: coords.x
-      , {
-          duration: speed
-          easing: @getSetting('walkEasing')
-          start: =>
-            if @direction == false
-              @setPonyImage(@getSetting('walkingFromRightImg'))
-            else
-              @setPonyImage(@getSetting('walkingFromLeftImg'))
-          done: =>
-            if @direction == false
-              @setPonyImage(@getSetting('restingFromRightImg'))
-            else
-              @setPonyImage(@getSetting('restingFromLeftImg'))
+  touch: =>
+    c = new RandomCoordinate
+      originBound: new Coordinate()
+      extentBound: new Coordinate(@getBounds().w, @getBounds().h)
+    @path = new Path(@getPosition(), c)
+    @animate('trotting')
 
-            if !@ponyInBounds()
-              @recenterPony()
-        }
+  # Animations that the pony can do
 
-    @init = ->
-      $(window).on 'resize', =>
-        if !@ponyInBounds()
-          @recenterPony()
-      @settings = $.extend( {}, @defaults, options )
-      @$pony.attr 'class', @getSetting('divClass')
-      @direction = 1
-      if(@direction > 0)
-        @setPonyImage(@getSetting('restingFromLeftImg'))
-      else 
-        @setPonyImage(@getSetting('restingFromRightImg'))
-      @$container = @$element
-      @$pony.css(ponyCss)
-      @$container.append @$pony
-      @$pony.on 'mouseenter', =>
-        if @$pony.is(':animated')
-          false
-        else
-          v = @randomVector()
-          coords = @getDestinationCoordinates(v.dist, v.angle)
-          coords = {
-            x: Math.abs(coords.x)
-            y: Math.abs(coords.y)
-          }
-          speed = @getPonySpeed(v.dist)
-          console.log(coords)
-          @animatePony(coords, speed)
-      @setState 'ready'
+  animate: (locomotion)->
+    s = (@path.length / @getSpeed(locomotion)) * 1000
+    @pwny.stop()
+    if @path 
+      gif = @settings.locomotion[locomotion][@path.hDirection()]
+      done = @settings.standing[@path.hDirection()]
+      @setState('animating')
+      $('img', @pwny).attr 'src', gif
+      @pwny.animate
+        left: @path.b.x
+        top: @path.b.y
+      , 
+        duration: s
+        easing: 'linear'
+        done: =>
+          $('img', @pwny).attr 'src', done
+          @setState('ready')
 
-    # initialise the plugin
-    @init()
+  wink: ->
+    if @path
+      done = @settings.standing[@path.hDirection()]
+      @pwny.stop() 
+      @pwny.css
+        left: @path.b.x
+        top: @path.b.y
+      $('img', @pwny).attr 'src', done
 
-    # make the plugin chainable
-    this
-
-  # default plugin settings
-  # $.miniPonies::defaults =
-  #     element: 'body'
-
-  # $.fn.miniPonies = ( options ) ->
-  #   this.each ->
-  #     if $( this ).data( 'miniPonies' ) is undefined
-  #       plugin = new $.miniPonies( this, options )
-  #       $( this).data( 'miniPonies', plugin )
-
-  $.miniPony = $.miniPonies
-  $.fn.miniPony = $.fn.miniPonies
+$ ->
+  p = new Pony()
+  t = new Ticker(5) # 5/100 chance that the ticker will fire
+  window.ee.addListener 'tick', ->
+    if p.getState() == 'ready' then p.pwny.trigger('touch')
+  p.pwny.on 'mouseenter', ->
+    p.pwny.trigger('touch')
+  p.pwny.on 'mousedown', ->
+    p.pwny.trigger('kick')
