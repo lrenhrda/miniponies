@@ -202,7 +202,7 @@ class Pony
         easing: 'linear'
         done: =>
           $('img', @pwny).attr 'src', done
-          @setState('ready')
+          @setState 'ready'
 
   wink: ->
     if @path
@@ -212,6 +212,7 @@ class Pony
         left: @path.b.x
         top: @path.b.y
       $('img', @pwny).attr 'src', done
+      @setState 'ready'
 
 $ ->
   p = new Pony()

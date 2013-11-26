@@ -284,7 +284,8 @@
           left: this.path.b.x,
           top: this.path.b.y
         });
-        return $('img', this.pwny).attr('src', done);
+        $('img', this.pwny).attr('src', done);
+        return this.setState('ready');
       }
     };
 
