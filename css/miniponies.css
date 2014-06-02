@@ -1,0 +1,3 @@
+.js-mp_pony{position:fixed;width:100px;height:0;display:block;background-repeat:no-repeat;background-position:center center;}
+.js-mp_pony img{position:absolute;bottom:0;left:0;z-index:2;margin-left:-50%;image-rendering:optimizeSpeed;image-rendering:-moz-crisp-edges;image-rendering:-o-crisp-edges;image-rendering:-webkit-optimize-contrast;image-rendering:optimize-contrast;-ms-interpolation-mode:nearest-neighbor;}
+.js-mp_pony.shadow:after{content:"";display:block;position:absolute;margin-left:-50%;bottom:-7px;left:0;z-index:1;width:100%;height:20px;background:radial-gradient(30px 30% at center center,rgba(0,0,0,0.1) 99%,rgba(0,0,0,0) 100%)}

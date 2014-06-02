@@ -1,0 +1,39 @@
+.js-mp_pony {
+  position fixed
+  width 100px
+  height 0
+  display block
+  background-repeat no-repeat
+  background-position center center
+
+  img {
+    position absolute
+    bottom 0
+    left 0
+    z-index 2
+    margin-left -50%
+    image-rendering: optimizeSpeed;             /*                     */
+    image-rendering: -moz-crisp-edges;          /* Firefox             */
+    image-rendering: -o-crisp-edges;            /* Opera               */
+    image-rendering: -webkit-optimize-contrast; /* Chrome (and Safari) */
+    image-rendering: optimize-contrast;         /* CSS3 Proposed       */
+    -ms-interpolation-mode: nearest-neighbor;   /* IE8+                */
+  }
+
+  &.shadow {
+    &:after {
+      content ""
+      display block
+      position absolute
+      margin-left -50%
+      bottom -7px 
+      left 0
+      z-index 1
+      width 100%
+      height 20px
+      // background radial-gradient(center center, ellipse closest-side, rgba(black,1) 50%, rgba(black,0) 100%)
+      // background radial-gradient(ellipse closest-side at center center, rgba(black,.05) 99%, rgba(black,0) 100%)
+      background radial-gradient(30px 30% at center center, rgba(black,.1) 99%, rgba(black,0) 100%)
+    }
+  }
+}

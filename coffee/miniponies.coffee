@@ -1,4 +1,6 @@
-class Ticker
+window.MiniPonies = { }
+
+class MiniPonies.Ticker
   constructor: (@chance = 50)->
     window.ee ?= new EventEmitter()
     @timer = setInterval =>
@@ -8,7 +10,7 @@ class Ticker
   # addListener: (...)->
     # window.ee.addListener(...)
 
-class Coordinate
+class MiniPonies.Coordinate
   constructor: (@x = 0, @y = 0)->
 
   getQuadrant: ->
@@ -26,13 +28,13 @@ class Coordinate
       return 360
 
 
-class RandomCoordinate
+class MiniPonies.RandomCoordinate
 
   # Returns a new (randomized) Coordinate object, instead of itself.
   constructor: (@options)->
-    if @options.originBound == null then @options.originBound = new Coordinate()
-    if @options.extentBound == null then @options.extentBound = new Coordinate($(window).width(), $(window).height())
-    return new Coordinate(@randomizeX(), @randomizeY())
+    if @options.originBound == null then @options.originBound = new MiniPonies.Coordinate()
+    if @options.extentBound == null then @options.extentBound = new MiniPonies.Coordinate($(window).width(), $(window).height())
+    return new MiniPonies.Coordinate(@randomizeX(), @randomizeY())
 
   randomizeX: ->
     _.random(@options.originBound.x, @options.extentBound.x)
@@ -41,11 +43,11 @@ class RandomCoordinate
     _.random(@options.originBound.y, @options.extentBound.y)
     
 
-class Path
+class MiniPonies.Path
   constructor: (@a, @b)->
     # @a is origin
     # @b is point
-    @delta = new Coordinate(@b.x - @a.x, @b.y - @a.y)
+    @delta = new MiniPonies.Coordinate(@b.x - @a.x, @b.y - @a.y)
     @length = Math.sqrt(Math.pow(@delta.x, 2) + Math.pow(@delta.y, 2))
 
   angle: (radians = false)->
@@ -103,7 +105,7 @@ class Path
 #     if @length == null then @length = _random.()
 #     return new Path()
 
-class Pony
+class MiniPonies.Pony
   constructor: (@options)->
     @settings = _.extend({}, @defaults, @options)
     @state = 'ready'
@@ -112,7 +114,7 @@ class Pony
       .css(@ponyCSS)
     if @settings.shadow then @pwny.addClass('shadow')
     @cel = $ 'body'  # Container element
-    @ticker = new Ticker(5)
+    @ticker = new MiniPonies.Ticker(5)
     @createPony()
 
   defaults:
@@ -152,7 +154,7 @@ class Pony
     @pwny.css('left', c.y)
 
   getPosition: ->
-    return new Coordinate(@pwny.position().left, @pwny.position().top)
+    return new MiniPonies.Coordinate(@pwny.position().left, @pwny.position().top)
     
   getSpeed: (locomotion)->
     @settings.locomotion[locomotion].speed
@@ -170,18 +172,18 @@ class Pony
   # Interactions that the pony responds to
 
   kick: =>
-    c = new RandomCoordinate
-      originBound: new Coordinate()
-      extentBound: new Coordinate(@getBounds().w, @getBounds().h)
-    @path = new Path(@getPosition(), c)
+    c = new MiniPonies.RandomCoordinate
+      originBound: new MiniPonies.Coordinate()
+      extentBound: new MiniPonies.Coordinate(@getBounds().w, @getBounds().h)
+    @path = new MiniPonies.Path(@getPosition(), c)
     # @animate('galloping')
     @wink()
 
   touch: =>
-    c = new RandomCoordinate
-      originBound: new Coordinate()
-      extentBound: new Coordinate(@getBounds().w, @getBounds().h)
-    @path = new Path(@getPosition(), c)
+    c = new MiniPonies.RandomCoordinate
+      originBound: new MiniPonies.Coordinate()
+      extentBound: new MiniPonies.Coordinate(@getBounds().w, @getBounds().h)
+    @path = new MiniPonies.Path(@getPosition(), c)
     @animate('trotting')
 
   # Animations that the pony can do
@@ -213,13 +215,3 @@ class Pony
         top: @path.b.y
       $('img', @pwny).attr 'src', done
       @setState 'ready'
-
-$ ->
-  p = new Pony()
-  t = new Ticker(5) # 5/100 chance that the ticker will fire
-  window.ee.addListener 'tick', ->
-    if p.getState() == 'ready' then p.pwny.trigger('touch')
-  p.pwny.on 'mouseenter', ->
-    p.pwny.trigger('touch')
-  p.pwny.on 'mousedown', ->
-    p.pwny.trigger('kick')

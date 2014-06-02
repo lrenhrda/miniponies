@@ -1,8 +1,9 @@
 (function() {
-  var Coordinate, Path, Pony, RandomCoordinate, Ticker,
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  Ticker = (function() {
+  window.MiniPonies = {};
+
+  MiniPonies.Ticker = (function() {
     function Ticker(chance) {
       var _this = this;
       this.chance = chance != null ? chance : 50;
@@ -20,7 +21,7 @@
 
   })();
 
-  Coordinate = (function() {
+  MiniPonies.Coordinate = (function() {
     function Coordinate(x, y) {
       this.x = x != null ? x : 0;
       this.y = y != null ? y : 0;
@@ -45,16 +46,16 @@
 
   })();
 
-  RandomCoordinate = (function() {
+  MiniPonies.RandomCoordinate = (function() {
     function RandomCoordinate(options) {
       this.options = options;
       if (this.options.originBound === null) {
-        this.options.originBound = new Coordinate();
+        this.options.originBound = new MiniPonies.Coordinate();
       }
       if (this.options.extentBound === null) {
-        this.options.extentBound = new Coordinate($(window).width(), $(window).height());
+        this.options.extentBound = new MiniPonies.Coordinate($(window).width(), $(window).height());
       }
-      return new Coordinate(this.randomizeX(), this.randomizeY());
+      return new MiniPonies.Coordinate(this.randomizeX(), this.randomizeY());
     }
 
     RandomCoordinate.prototype.randomizeX = function() {
@@ -69,11 +70,11 @@
 
   })();
 
-  Path = (function() {
+  MiniPonies.Path = (function() {
     function Path(a, b) {
       this.a = a;
       this.b = b;
-      this.delta = new Coordinate(this.b.x - this.a.x, this.b.y - this.a.y);
+      this.delta = new MiniPonies.Coordinate(this.b.x - this.a.x, this.b.y - this.a.y);
       this.length = Math.sqrt(Math.pow(this.delta.x, 2) + Math.pow(this.delta.y, 2));
     }
 
@@ -147,7 +148,7 @@
 
   })();
 
-  Pony = (function() {
+  MiniPonies.Pony = (function() {
     function Pony(options) {
       this.options = options;
       this.touch = __bind(this.touch, this);
@@ -159,7 +160,7 @@
         this.pwny.addClass('shadow');
       }
       this.cel = $('body');
-      this.ticker = new Ticker(5);
+      this.ticker = new MiniPonies.Ticker(5);
       this.createPony();
     }
 
@@ -209,7 +210,7 @@
     };
 
     Pony.prototype.getPosition = function() {
-      return new Coordinate(this.pwny.position().left, this.pwny.position().top);
+      return new MiniPonies.Coordinate(this.pwny.position().left, this.pwny.position().top);
     };
 
     Pony.prototype.getSpeed = function(locomotion) {
@@ -233,21 +234,21 @@
 
     Pony.prototype.kick = function() {
       var c;
-      c = new RandomCoordinate({
-        originBound: new Coordinate(),
-        extentBound: new Coordinate(this.getBounds().w, this.getBounds().h)
+      c = new MiniPonies.RandomCoordinate({
+        originBound: new MiniPonies.Coordinate(),
+        extentBound: new MiniPonies.Coordinate(this.getBounds().w, this.getBounds().h)
       });
-      this.path = new Path(this.getPosition(), c);
+      this.path = new MiniPonies.Path(this.getPosition(), c);
       return this.wink();
     };
 
     Pony.prototype.touch = function() {
       var c;
-      c = new RandomCoordinate({
-        originBound: new Coordinate(),
-        extentBound: new Coordinate(this.getBounds().w, this.getBounds().h)
+      c = new MiniPonies.RandomCoordinate({
+        originBound: new MiniPonies.Coordinate(),
+        extentBound: new MiniPonies.Coordinate(this.getBounds().w, this.getBounds().h)
       });
-      this.path = new Path(this.getPosition(), c);
+      this.path = new MiniPonies.Path(this.getPosition(), c);
       return this.animate('trotting');
     };
 
@@ -292,22 +293,5 @@
     return Pony;
 
   })();
-
-  $(function() {
-    var p, t;
-    p = new Pony();
-    t = new Ticker(5);
-    window.ee.addListener('tick', function() {
-      if (p.getState() === 'ready') {
-        return p.pwny.trigger('touch');
-      }
-    });
-    p.pwny.on('mouseenter', function() {
-      return p.pwny.trigger('touch');
-    });
-    return p.pwny.on('mousedown', function() {
-      return p.pwny.trigger('kick');
-    });
-  });
 
 }).call(this);
